@@ -1,4 +1,4 @@
-import writer
+import writer as writer
 
 class GetTime:
     def __init__(self):

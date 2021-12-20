@@ -4,21 +4,21 @@ import discord
 from dotenv import load_dotenv
 
 #from commands import *
-import commands.commands as cmd
-import exceptions
-import writer
+from commands.commands import Commands
+from exceptions import *
+import writer as writer
 
 client = discord.Client()
 
-commands = cmd.Commands("!")
+commands = Commands("$")
 
 @client.event
 async def on_message(message):
     try:
         await commands.onMessage(message)
-    except exceptions.InvalidStatementException as e:
+    except InvalidStatementException as e:
         await message.channel.send(embed=writer.printError("Invalid Statement Exception!", e))
-    except exceptions.CommandNotFoundException as e:
+    except CommandNotFoundException as e:
         await message.channel.send(embed=writer.printError("Command Not Found Exception!", e))
 
     #print(message.content)

@@ -1,6 +1,6 @@
 import discord
 
-import exceptions
+from exceptions import *
 import commands.trigger as trigger
 
 class Commands:
@@ -35,13 +35,13 @@ class Commands:
                     command = word
                     continue
                 else:
-                    raise exceptions.InvalidStatementException("Command Can Only Contain Letters!")
+                    raise InvalidStatementException("Command Can Only Contain Letters!")
             
             #step 3
             try:
                 key, value = self.parseParameters(word)
                 parameters[key] = value
-            except exceptions.InvalidStatementException as e:
+            except InvalidStatementException as e:
                 raise e
         
         return command, parameters
@@ -50,18 +50,18 @@ class Commands:
         key_value_split = parameter.split("=")
         if len(key_value_split) == 2:
             if not self.containOnlyLetters(key_value_split[0]):
-                raise exceptions.InvalidStatementException("Parameter Key Can Only Contain Letters!")
+                raise InvalidStatementException("Parameter Key Can Only Contain Letters!")
 
             split_array = key_value_split[1].split(":")
             split_array = list(filter(lambda s:s != "", split_array))
             for value in split_array:
                 if not self.containOnlyLetters(value):
-                    raise exceptions.InvalidStatementException("Parameter Value Can Only Contain Letters!")
+                    raise InvalidStatementException("Parameter Value Can Only Contain Letters!")
 
             return key_value_split[0], split_array
 
         if not self.containOnlyLetters(parameter):
-            raise exceptions.InvalidStatementException("Parameter Can Only Contain Letters!")
+            raise InvalidStatementException("Parameter Can Only Contain Letters!")
 
         return parameter, None
 
