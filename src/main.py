@@ -25,6 +25,6 @@ async def on_message(message):
 if __name__ == "__main__":
     load_dotenv()
     token = os.getenv("BOT_TOKEN")
-    client.run(token)
-
+    
     print("Bot is online!")
+    client.run(token)
