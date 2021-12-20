@@ -3,14 +3,13 @@ import discord
 
 from dotenv import load_dotenv
 
-#from commands import *
 from commands.commands import Commands
 from exceptions import *
 import writer as writer
 
 client = discord.Client()
 
-commands = Commands("$")
+commands = Commands("!")
 
 @client.event
 async def on_message(message):
