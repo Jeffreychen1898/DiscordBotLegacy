@@ -1,20 +1,21 @@
 import discord
 
-from exceptions import *
+import exceptions
+import commands.trigger as trigger
 
 class Commands:
     def __init__(self, invokeCommand):
         self.invokeCommand = invokeCommand
-        #self.commandTrigger = CommandTriggers()
+        self.commandTrigger = trigger.CommandTrigger()
 
-    def onMessage(self, message):
+    async def onMessage(self, message):
         if len(message.content) == 0:
             return
 
         if message.content[0] == self.invokeCommand:#step 1
             try:
                 command, parameters = self.parseCommand(message.content[1:])
-                raise CommandNotFoundException("You Can Only Use A Valid Command!")
+                await self.commandTrigger.triggerCommands(message, command, parameters)
             except Exception as e:
                 raise e
 
@@ -34,13 +35,13 @@ class Commands:
                     command = word
                     continue
                 else:
-                    raise InvalidStatementException("Command Can Only Contain Letters!")
+                    raise exceptions.InvalidStatementException("Command Can Only Contain Letters!")
             
             #step 3
             try:
                 key, value = self.parseParameters(word)
                 parameters[key] = value
-            except InvalidStatementException as e:
+            except exceptions.InvalidStatementException as e:
                 raise e
         
         return command, parameters
@@ -49,18 +50,18 @@ class Commands:
         key_value_split = parameter.split("=")
         if len(key_value_split) == 2:
             if not self.containOnlyLetters(key_value_split[0]):
-                raise InvalidStatementException("Parameter Key Can Only Contain Letters!")
+                raise exceptions.InvalidStatementException("Parameter Key Can Only Contain Letters!")
 
             split_array = key_value_split[1].split(":")
             split_array = list(filter(lambda s:s != "", split_array))
             for value in split_array:
                 if not self.containOnlyLetters(value):
-                    raise InvalidStatementException("Parameter Value Can Only Contain Letters!")
+                    raise exceptions.InvalidStatementException("Parameter Value Can Only Contain Letters!")
 
             return key_value_split[0], split_array
 
         if not self.containOnlyLetters(parameter):
-            raise InvalidStatementException("Parameter Can Only Contain Letters!")
+            raise exceptions.InvalidStatementException("Parameter Can Only Contain Letters!")
 
         return parameter, None
 
