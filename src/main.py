@@ -1,5 +1,8 @@
 import os
 import discord
+import flask
+import waitress
+import threading
 
 from dotenv import load_dotenv
 
@@ -9,7 +12,7 @@ import writer as writer
 
 client = discord.Client()
 
-commands = Commands("!")
+commands = Commands("$")
 
 @client.event
 async def on_message(message):
@@ -21,10 +24,22 @@ async def on_message(message):
         await message.channel.send(embed=writer.printError("Command Not Found Exception!", e))
 
     #print(message.content)
+    
+app = flask.Flask(__name__)
+    
+@app.route("/")
+def home():
+	return "Bot should be running!"
+
+def run():
+    waitress.serve(app, host="127.0.0.1", port="5000")
 
 if __name__ == "__main__":
     load_dotenv()
     token = os.getenv("BOT_TOKEN")
+    
+    t = threading.Thread(target=run)
+    t.start()
     
     print("Bot is online!")
     client.run(token)
