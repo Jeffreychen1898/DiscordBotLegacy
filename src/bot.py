@@ -9,16 +9,16 @@ client = discord.Client()
 @client.event
 async def on_message(message):
     try:
-        await commands.onMessage(message)
+        await commands.on_message(message)
     except InvalidStatementException as e:
         await message.channel.send(embed=writer.printError("Invalid Statement Exception!", e))
     except CommandNotFoundException as e:
         await message.channel.send(embed=writer.printError("Command Not Found Exception!", e))
 
 class DiscordBot:
-    def __init__(self, invokeCommand):
+    def __init__(self, invoke_command):
         global commands
-        commands = Commands(invokeCommand)
+        commands = Commands(invoke_command)
     
     def run(self, token):
         print("Bot is running!")

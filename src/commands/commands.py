@@ -4,23 +4,23 @@ from exceptions import *
 import commands.trigger as trigger
 
 class Commands:
-    def __init__(self, invokeCommand):
-        self.invokeCommand = invokeCommand
-        self.commandTrigger = trigger.CommandTrigger()
+    def __init__(self, invoke_command):
+        self.invoke_command = invoke_command
+        self.command_trigger = trigger.CommandTrigger()
 
-    async def onMessage(self, message):
+    async def on_message(self, message):
         if len(message.content) == 0:
             return
 
-        if message.content[0] == self.invokeCommand:#step 1
+        if message.content[0] == self.invoke_command:#step 1
             try:
-                command, parameters = self.parseCommand(message.content[1:])
-                await self.commandTrigger.triggerCommands(message, command, parameters)
+                command, parameters = self.parse_command(message.content[1:])
+                await self.command_trigger.trigger_commands(message, command, parameters)
             except Exception as e:
                 raise e
 
     #private
-    def parseCommand(self, message):
+    def parse_command(self, message):
         command = ""
         parameters = {}
         #step 2
@@ -31,7 +31,7 @@ class Commands:
                 continue
 
             if command == "":
-                if self.containOnlyLetters(word):
+                if self.contain_only_letters(word):
                     command = word
                     continue
                 else:
@@ -39,17 +39,17 @@ class Commands:
             
             #step 3
             try:
-                key, value = self.parseParameters(word)
+                key, value = self.parse_parameters(word)
                 parameters[key] = value
             except InvalidStatementException as e:
                 raise e
         
         return command, parameters
     
-    def parseParameters(self, parameter):
+    def parse_parameters(self, parameter):
         key_value_split = parameter.split("=")
         if len(key_value_split) == 2:
-            if not self.containOnlyLetters(key_value_split[0]):
+            if not self.contain_only_letters(key_value_split[0]):
                 raise InvalidStatementException("Parameter Key Can Only Contain Letters!")
 
             split_array = key_value_split[1].split(":")
@@ -60,12 +60,12 @@ class Commands:
 
             return key_value_split[0], split_array
 
-        if not self.containOnlyLetters(parameter):
+        if not self.contain_only_letters(parameter):
             raise InvalidStatementException("Parameter Can Only Contain Letters!")
 
         return parameter, None
 
-    def containOnlyLetters(self, word):
+    def contain_only_letters(self, word):
         for character in word:
             ascii_code = ord(character)
             if ascii_code < 65 or ascii_code > 90: #upper case
