@@ -34,7 +34,8 @@ def home():
 	return "Bot should be running!"
 
 def run():
-    waitress.serve(app, host="127.0.0.1", port="5000")
+    print("Website is online!")
+    waitress.serve(app, port="5000")
 
 if __name__ == "__main__":
     token = os.getenv("BOT_TOKEN")
