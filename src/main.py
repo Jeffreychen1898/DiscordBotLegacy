@@ -10,9 +10,11 @@ from commands.commands import Commands
 from exceptions import *
 import writer as writer
 
+load_dotenv()
+
 client = discord.Client()
 
-commands = Commands("$")
+commands = Commands(os.getenv("INVOKE_COMMAND"))
 
 @client.event
 async def on_message(message):
@@ -35,7 +37,6 @@ def run():
     waitress.serve(app, host="127.0.0.1", port="5000")
 
 if __name__ == "__main__":
-    load_dotenv()
     token = os.getenv("BOT_TOKEN")
     
     t = threading.Thread(target=run)
