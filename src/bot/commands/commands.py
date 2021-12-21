@@ -1,7 +1,8 @@
 import discord
 
+import bot.commands.trigger as trigger
+
 from exceptions import *
-import commands.trigger as trigger
 
 class Commands:
     def __init__(self, invoke_command):

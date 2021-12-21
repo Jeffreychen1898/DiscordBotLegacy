@@ -1,7 +1,8 @@
 import discord
 
-import writer as writer
-from commands.commands import Commands
+import bot.writer as writer
+import bot.commands.commands as cmds
+
 from exceptions import *
 
 client = discord.Client()
@@ -18,7 +19,7 @@ async def on_message(message):
 class DiscordBot:
     def __init__(self, invoke_command):
         global commands
-        commands = Commands(invoke_command)
+        commands = cmds.Commands(invoke_command)
     
     def run(self, token):
         print("Bot is running!")

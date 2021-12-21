@@ -1,4 +1,4 @@
-import writer as writer
+import bot.writer as writer
 
 class GetTime:
     def __init__(self):

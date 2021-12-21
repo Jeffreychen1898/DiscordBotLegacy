@@ -1,10 +1,10 @@
-#import commands.cmdlist.gettime as time
-from commands.cmdlist.gettime import GetTime
+import bot.commands.cmdlist.gettime as gettime
+
 from exceptions import *
 
 class CommandTrigger:
     def __init__(self):
-        self.get_time = GetTime()
+        self.get_time = gettime.GetTime()
 
     async def trigger_commands(self, message, command, parameter):
         if(command == "time"):

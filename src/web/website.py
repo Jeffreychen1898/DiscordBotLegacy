@@ -7,6 +7,6 @@ app = flask.Flask(__name__)
 def home():
     return "Bot should be running"
 
-def run(port_number):
+def run_website(port_number):
     print("Website is online!")
     waitress.serve(app, port=port_number)
