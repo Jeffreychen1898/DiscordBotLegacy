@@ -5,6 +5,8 @@ import dotenv as env
 
 import bot.bot as discordbot
 import web.website as website
+import config as config
+import storage as storage
 
 def run_website():
     port_number = os.getenv("PORT")
@@ -19,6 +21,9 @@ def run_discord_bot():
 
 if __name__ == "__main__":
     env.load_dotenv()
+
+    config.init()
+    storage.init()
 
     thread = threading.Thread(target=run_website)
     thread.start()

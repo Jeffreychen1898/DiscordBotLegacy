@@ -1,5 +1,3 @@
-import discord
-
 import bot.commands.trigger as trigger
 
 from exceptions import *
@@ -25,7 +23,7 @@ class Commands:
         command = ""
         parameters = {}
         #step 2
-        split_message = message.split()
+        split_message = self.split_command(message)
         for each_word in split_message:
             word = each_word.strip()
             if word == "":
@@ -47,30 +45,88 @@ class Commands:
         
         return command, parameters
     
+    def split_command(self, command):
+        result = []
+        inside_quote = False
+        value = ""
+        for character in command:
+            if character == "\"":
+                inside_quote = not inside_quote
+                value += "\""
+                continue
+            
+            if character == " " and inside_quote == False:
+                if value != "":
+                    result.append(value)
+                    value = ""
+                
+                continue
+            
+            value += character
+        
+        if value != "":
+            result.append(value)
+        
+        return result
+    
     def parse_parameters(self, parameter):
         key_value_split = parameter.split("=")
         if len(key_value_split) == 2:
             if not self.contain_only_letters(key_value_split[0]):
                 raise InvalidStatementException("Parameter Key Can Only Contain Letters!")
 
-            split_array = key_value_split[1].split(":")
-            split_array = list(filter(lambda s:s != "", split_array))
-            for value in split_array:
-                if not self.containOnlyLetters(value):
-                    raise InvalidStatementException("Parameter Value Can Only Contain Letters!")
-
-            return key_value_split[0], split_array
+            try:
+                parameter_values = self.parse_parameter_values(key_value_split[1], ":")
+                return key_value_split[0], parameter_values
+            except Exception as e:
+                raise e
 
         if not self.contain_only_letters(parameter):
             raise InvalidStatementException("Parameter Can Only Contain Letters!")
 
         return parameter, None
+    
+    def parse_parameter_values(self, parameter, split_values_character):
+        inside_quotes = False
+        values_list = []
+        value = ""
+        for character in parameter:
+            if character == "\"":
+                inside_quotes = not inside_quotes
+                continue
+
+            if inside_quotes:
+                value += character
+            elif character == split_values_character:
+                if value != "":
+                    values_list.append(value)
+                    value = ""
+            elif self.is_letter(character):
+                value += character
+            else:
+                raise InvalidStatementException("Parameter Value Can Only Contain Letters Or Strings!")
+        
+        if inside_quotes:
+            raise InvalidStatementException("Parameter Value Is Missing A Quotation Mark!")
+
+        if value != "":
+            values_list.append(value)
+
+        return values_list
+
+    def is_letter(self, character):
+        ascii_code = ord(character)
+        if ascii_code > 64 and ascii_code < 91: #upper case
+            return True
+        
+        if ascii_code > 96 and ascii_code < 123: #lower case
+            return True
+        
+        return False
 
     def contain_only_letters(self, word):
         for character in word:
-            ascii_code = ord(character)
-            if ascii_code < 65 or ascii_code > 90: #upper case
-                if ascii_code < 97 or ascii_code > 122: #lower case
-                    return False
+            if not self.is_letter(character):
+                return False
 
         return True

@@ -1,0 +1,12 @@
+{
+    "database": [
+        {
+            "name": "user",
+            "columns": [
+                "id text NOT NULL,",
+                "theme boolean NOT NULL,",
+                "access text NOT NULL"
+            ]
+        }
+    ]
+}
