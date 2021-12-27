@@ -9,9 +9,12 @@ class CommandTrigger:
         self.audio_player = audio_player.AudioPlayer()
 
     async def trigger_commands(self, message, command, parameter):
-        if command == "time":
-            await self.get_time.get_time(message, parameter)
-        elif command == "play":
-            await self.audio_player.play(message, parameter)
-        else:
-            raise CommandNotFoundException(f"You tried running the \"{command}\" command but this command cannot be found")
+        try:
+            if command == "time":
+                await self.get_time.get_time(message, parameter)
+            elif command == "play":
+                await self.audio_player.play(message, parameter)
+            else:
+                raise CommandNotFoundException(f"You tried running the \"{command}\" command but this command cannot be found")
+        except Exception as e:
+            raise e

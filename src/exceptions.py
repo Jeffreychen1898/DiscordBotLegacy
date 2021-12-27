@@ -3,3 +3,6 @@ class InvalidStatementException(Exception):
 
 class CommandNotFoundException(Exception):
     pass
+
+class CommandErrorException(Exception):
+    pass
