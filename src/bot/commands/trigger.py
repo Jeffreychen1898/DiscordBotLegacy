@@ -7,7 +7,6 @@ class CommandTrigger:
         self.get_time = gettime.GetTime()
 
     async def trigger_commands(self, message, command, parameter):
-        print(parameter)
         if(command == "time"):
             await self.get_time.get_time(message, parameter)
         else:
