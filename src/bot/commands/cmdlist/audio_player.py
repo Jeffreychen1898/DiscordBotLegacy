@@ -10,11 +10,9 @@ class AudioPlayer:
 
     async def play(self, message, parameters):
         try:
-            if message.guild.voice_client is not None:
-                await message.guild.voice_client.disconnect()
+            if message.author.voice is None:
+                raise CommandErrorException("You Must Be In A Voice Channel To Use This Command!")
 
-            voice = await message.author.voice.channel.connect()
-            
             url, index, search_query = self.find_audio(parameters)
             if not url and not index and not search_query:
                 return
@@ -22,6 +20,8 @@ class AudioPlayer:
             if url != "":
                 #play by url
                 audio_info = self.ytdl.extract_info(url, download=False)
+
+                voice = await self.connect_to_vc(message)
                 voice.play(discord.FFmpegPCMAudio(audio_info["formats"][0]["url"]))
 
             elif len(search_query) > 0 and index <= self.max_search_list:
@@ -30,6 +30,7 @@ class AudioPlayer:
                 audio_url = "https://www.youtube.com" + results[index]["url_suffix"]
                 audio_info = self.ytdl.extract_info(audio_url, download=False)
 
+                voice = await self.connect_to_vc(message)
                 voice.play(discord.FFmpegPCMAudio(audio_info["formats"][0]["url"]))
             else:
                 raise CommandErrorException("I Do Not Understand What You Want Me To Play!")
@@ -66,3 +67,10 @@ class AudioPlayer:
 
     def output_titles(self):
         pass
+
+    async def connect_to_vc(self, message):
+        if message.guild.voice_client is not None:
+            await message.guild.voice_client.disconnect()
+        
+        voice = await message.author.voice.channel.connect()
+        return voice
