@@ -40,7 +40,6 @@ class Commands:
 
             index = self.find_index_with_token(tokens, " ")
             parameters = self.parse_parameters(tokens, types, index)
-            print(parameters)
 
             return command, parameters
         except Exception as e:
