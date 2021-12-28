@@ -18,8 +18,8 @@ async def on_message(message):
     except CommandErrorException as e:
         await message.channel.send(embed=writer.print_error(message, "Command Error Exception!", e))
     except Exception as e:
-        print(e)
         await message.channel.send(embed=writer.print_error(message, "An Unexpected Error Has Occured", "Please Report The Issue!"))
+        raise e
 
 class DiscordBot:
     def __init__(self, invoke_command):

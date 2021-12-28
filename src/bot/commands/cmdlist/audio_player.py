@@ -1,6 +1,7 @@
 import youtube_dl
 import discord
 import youtube_search
+import asyncio
 
 from exceptions import CommandErrorException
 import bot.writer as writer
@@ -15,34 +16,64 @@ class AudioPlayer:
             if message.author.voice is None:
                 raise CommandErrorException("You Must Be In A Voice Channel To Use This Command!")
 
+            await self.connect_to_vc(message)
+
             url, index, search_query = await self.find_audio(message, parameters)
             if url == None and index == None and search_query == None:
                 return
 
-            if url != "":
-                #play by url
-                audio_info = self.ytdl.extract_info(url, download=False)
+            if url == "":
+                url = self.search_youtube(search_query, index)
 
-                voice = await self.connect_to_vc(message)
-                await self.display_audio(message, audio_info["title"], url)
-                voice.play(discord.FFmpegPCMAudio(audio_info["formats"][0]["url"]))
-
-            elif len(search_query) > 0 and index < self.max_search_list and index >= 0:
-                #play by title
-                results = youtube_search.YoutubeSearch(search_query[0], max_results=self.max_search_list).to_dict()
-                audio_url = "https://www.youtube.com" + results[index]["url_suffix"]
-                audio_info = self.ytdl.extract_info(audio_url, download=False)
-
-                voice = await self.connect_to_vc(message)
-                await self.display_audio(message, audio_info["title"], audio_url)
-                voice.play(discord.FFmpegPCMAudio(audio_info["formats"][0]["url"]))
-            else:
-                raise CommandErrorException("I Do Not Understand What You Want Me To Play!")
+            info = self.play_audio(message, url)
+            await self.display_audio(message, info["title"], url)
 
         except Exception as e:
             raise e
     
+    def on_audio_end(self, message, url):
+        info = self.ytdl.extract_info(url, download=False)
+        message.guild.voice_client.play(discord.FFmpegPCMAudio(info["formats"][0]["url"]))
+    
+    async def stop(self, message):
+        if self.not_in_vc(message):
+            raise CommandErrorException("I Am Not Playing Any Audio In The Voice Channel At The Moment!")
+
+        message.guild.voice_client.stop()
+    
+    async def pause(self, message):
+        if self.not_in_vc(message):
+            raise CommandErrorException("I Am Not Playing Any Audio In The Voice Channel At The Moment!")
+
+        message.guild.voice_client.pause()
+
+    async def resume(self, message):
+        if self.not_in_vc(message):
+            raise CommandErrorException("I Am Not Playing Any Audio In The Voice Channel At The Moment!")
+
+        message.guild.voice_client.resume()
+    
     #private
+    def search_youtube(self, search_query, index):
+        try:
+            results = youtube_search.YoutubeSearch(search_query[0], max_results=self.max_search_list).to_dict()
+            return "https://www.youtube.com" + results[index]["url_suffix"]
+        except:
+            raise CommandErrorException("This Audio Cannot Be Found!")
+
+    def play_audio(self, message, url, after=None):
+        try:
+            info = self.ytdl.extract_info(url, download=False)
+            audio = discord.FFmpegPCMAudio(info["formats"][0]["url"])
+            if after:
+                message.guild.voice_client.play(audio, after=after)
+            else:
+                message.guild.voice_client.play(audio)
+            
+            return info
+        except:
+            raise CommandErrorException("The URL Appears To Be Invalid!")
+
     async def find_audio(self, message, parameters):
         url = ""
         index = 0
@@ -97,10 +128,15 @@ class AudioPlayer:
         embed = discord.Embed(title=title, description=description, color=writer.COLOR_SUCCESS)
         writer.polish_message(message, embed)
         await message.channel.send(embed=embed)
+    
+    def not_in_vc(self, message):
+        if not message.guild.voice_client:
+            return True
+        if not message.guild.voice_client.is_playing():
+            return True
+        
+        return False
 
     async def connect_to_vc(self, message):
-        if message.guild.voice_client is not None:
-            await message.guild.voice_client.disconnect()
-        
-        voice = await message.author.voice.channel.connect()
-        return voice
+        if message.guild.voice_client is None:
+            await message.author.voice.channel.connect()

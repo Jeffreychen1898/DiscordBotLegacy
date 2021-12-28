@@ -14,6 +14,12 @@ class CommandTrigger:
                 await self.get_time.get_time(message, parameter)
             elif command == "play":
                 await self.audio_player.play(message, parameter)
+            elif command == "stopaudio":
+                await self.audio_player.stop(message)
+            elif command == "pauseaudio":
+                await self.audio_player.pause(message)
+            elif command == "resumeaudio":
+                await self.audio_player.resume(message)
             else:
                 raise CommandNotFoundException(f"You tried running the \"{command}\" command but this command cannot be found")
         except Exception as e:

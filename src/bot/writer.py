@@ -1,7 +1,7 @@
 import discord
 
-COLOR_ERROR = 0xff0000
-COLOR_SUCCESS = 0x00ff00
+COLOR_ERROR = 0xcc0000
+COLOR_SUCCESS = 0x009e0c
 
 def print_error(ctx, type, message):
     embed = discord.Embed(title="ERROR", color=COLOR_ERROR)
