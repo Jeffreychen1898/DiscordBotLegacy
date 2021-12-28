@@ -5,9 +5,11 @@ import bot.commands.commands as cmds
 
 from exceptions import *
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.members = True
+writer.client = discord.Client(intents=intents)
 
-@client.event
+@writer.client.event
 async def on_message(message):
     try:
         await commands.on_message(message)
@@ -28,4 +30,4 @@ class DiscordBot:
     
     def run(self, token):
         print("Bot is running!")
-        client.run(token)
+        writer.client.run(token)

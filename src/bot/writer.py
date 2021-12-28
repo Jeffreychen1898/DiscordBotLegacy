@@ -3,6 +3,8 @@ import discord
 COLOR_ERROR = 0xcc0000
 COLOR_SUCCESS = 0x009e0c
 
+client = None
+
 def print_error(ctx, type, message):
     embed = discord.Embed(title="ERROR", color=COLOR_ERROR)
     embed.add_field(name=type, value=message, inline=False)

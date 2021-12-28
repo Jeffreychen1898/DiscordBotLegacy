@@ -20,6 +20,10 @@ class CommandTrigger:
                 await self.audio_player.pause(message)
             elif command == "resumeaudio":
                 await self.audio_player.resume(message)
+            elif command == "skipaudio":
+                await self.audio_player.skip(message)
+            elif command == "audioqueue":
+                await self.audio_player.display_queue(message)
             else:
                 raise CommandNotFoundException(f"You tried running the \"{command}\" command but this command cannot be found")
         except Exception as e:
